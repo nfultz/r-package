@@ -24,30 +24,31 @@ domino.handleCommandNotFound = function(failureMessage){
 }
 
 domino.osSpecificPrefixOfDominoCommand <- function() {
-  os = Sys.info()["sysname"]
-  if(os == "Darwin") {return("/Applications/domino/")}
-  else if (os =="Linux") {return("~/domino/")}
-  else if (os == "Windows") {return("c:\\program files (x86)\\domino\\")}
-  else { print("Your operating system is not supported by domino R package.")}
+  switch(Sys.info()["sysname"],
+    Darwin = "/Applications/domino/",
+    Linux = "~/domino/",
+    Windows = "c:\\program files (x86)\\domino\\",
+    print("Your operating system is not supported by domino R package.")
+  )
 }
 
 domino.notFalse <- function(arg) {
-  if (arg == FALSE){FALSE} else { TRUE}
+  arg != FALSE
 }
 
 domino.OK <- function(){return(0)}
 
 domino.projectNameWithoutUser <- function(projectName) {
-  rev(unlist(strsplit(projectName, "/")))[1]
+  basename(projectName)
 }
 
 domino.jumpToProjectsWorkingDirectory <- function(projectName) {
-  setwd(paste("./",domino.projectNameWithoutUser(projectName), sep=""))
+  setwd(file.path(".",domino.projectNameWithoutUser(projectName)))
   print("Changed working directory to new project's directory.")
 }
 
 .is.domino.in.path <- function() {
-  nzchar(Sys.which("domino")) 
+  file.exists(Sys.which("domino")) 
 }
 
 .open.rStudio.login.prompt <- function(message){
